@@ -1,0 +1,11 @@
+pyarrow
+requests
+xmltodict
+mysqlclient>=1.4.0
+apache-airflow[pandas]
+mysql-connector-python>=8.0.29
+apache-airflow-providers-redis
+apache-airflow-providers-common-sql>=1.3.1
+apache-airflow-providers-postgres
+apache-airflow-providers-celery[cncf.kubernetes]
+apache-airflow-providers-mysql
