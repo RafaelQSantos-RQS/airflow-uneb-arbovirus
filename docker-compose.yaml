@@ -77,7 +77,7 @@ services:
       MYSQL_USER: arbovirus
       MYSQL_PASSWORD: 123456
     volumes:
-      - ${AIRFLOW_PROJ_DIR:-.}/backup/mysql:/var/lib/data
+      - mysql_data:/var/lib/mysql
 
   grafana:
     image: grafana/grafana-oss
@@ -250,3 +250,6 @@ services:
       - bash
       - -c
       - airflow
+
+volumes:
+  - mysql_data:/var/lib/mysql

@@ -1,6 +1,7 @@
 pyarrow
 requests
 xmltodict
+beautifulsoup4
 mysqlclient>=1.4.0
 apache-airflow[pandas]
 mysql-connector-python>=8.0.29

@@ -175,6 +175,11 @@ class Silver:
 
     def load_data(parquet_file:str):
         data = pd.read_parquet(parquet_file)
+
+        # Correção forçada da data
+        data['update_date'] = data['update_date'].dt.date
+        data['create_date'] = data['create_date'].dt.date
+        
         mysql_hook = MySqlHook(mysql_conn_id='mysql_arbovirus')
         sqlalchemy_engine = mysql_hook.get_sqlalchemy_engine()
         data.to_sql(name='processed_sequences',con=sqlalchemy_engine,if_exists='replace')

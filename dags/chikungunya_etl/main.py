@@ -5,6 +5,7 @@ from datetime import datetime
 from airflow.utils.task_group import TaskGroup
 from airflow.operators.python import PythonOperator
 from airflow.operators.empty import EmptyOperator
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 
 # Custom modules
 DAG_FOLDER = os.path.dirname(os.path.abspath(__file__))
@@ -16,7 +17,7 @@ dag = DAG(
     dag_id='chikungunya_etl',
     description='Pipeline no qual será feita a extração dos sequenciamentos genéticos do genbank.',
     schedule=None, start_date=datetime(year=2024,month=7,day=20),
-    dag_display_name='ETL Sequências (Chikungunya)',catchup=False, default_view='graph'
+    dag_display_name='ETL Sequências (Chikungunya)',catchup=False, default_view='graph', tags=['etl']
 )
 
 start = EmptyOperator(task_id='start',task_display_name='Inicio',dag=dag)
@@ -33,7 +34,7 @@ with TaskGroup(group_id='landing_stg',tooltip='Landing stage',dag=dag) as landin
         'term':'Chikungunya',
         'retmax':1000,
         'datetype':"pdat",
-        'reldate':120
+        'reldate':180
     }
     extract_uid = PythonOperator(task_id='extract_uid',task_display_name='Extração dos UID',python_callable=Landing.extract_uids,op_kwargs=op_kwargs,dag=dag)
 
@@ -59,5 +60,6 @@ with TaskGroup(group_id='silver_stg',tooltip='Silver Stage',dag=dag) as silver_s
 
     extract_bronze_data >> clean_bronze_data >> load_clean_data
 
+download_article_tsk = TriggerDagRunOperator(task_id='download_articles',task_display_name='Baixando os artigos', trigger_dag_id='article_downloader', dag=dag)
 
-start >> landing_stg >> landing_to_bronze >> bronze_stg >> bronze_to_silver >> silver_stg >>end
+start >> landing_stg >> landing_to_bronze >> bronze_stg >> bronze_to_silver >> silver_stg >> end >> download_article_tsk
